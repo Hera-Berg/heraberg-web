@@ -1,0 +1,16 @@
+{
+  "name": "heraberg-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Poster page + project router/gate for heraberg.com",
+  "scripts": {
+    "build": "node --env-file=.env build.mjs",
+    "watch": "node --env-file=.env build.mjs --watch",
+    "serve": "node --env-file=.env server.mjs",
+    "start": "node --env-file=.env build.mjs && node --env-file=.env server.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

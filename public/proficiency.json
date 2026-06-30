@@ -1,0 +1,19 @@
+{
+  "_comment": "Edit this file to change the Proficiency section. Two parts: 'bars' (the graphical proficiency bars) and 'strengths' (the cards below). 'level' is the bar width as a percentage string. 'label' is optional.",
+
+  "bars": [
+    { "name": "Python",       "level": "92%", "label": "Advanced" },
+    { "name": "JavaScript",   "level": "78%", "label": "Proficient" },
+    { "name": "Bash / Shell", "level": "74%", "label": "Proficient" },
+    { "name": "SQL",          "level": "68%", "label": "Comfortable" },
+    { "name": "HTML / CSS",   "level": "80%", "label": "Proficient" },
+    { "name": "TypeScript_test",   "level": "55%", "label": "Learning" }
+  ],
+
+  "strengths": [
+    { "title": "Self-hosting & tunnels", "blurb": "Exposing local services to the world cleanly with Cloudflare Tunnel." },
+    { "title": "Containerization",       "blurb": "Reproducible Docker setups that just spin up." },
+    { "title": "Backend & APIs",         "blurb": "Designing and shipping services in Python." },
+    { "title": "Linux & the CLI",        "blurb": "At home in the terminal, scripting the boring parts away." }
+  ]
+}

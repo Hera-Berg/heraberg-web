@@ -1,0 +1,14 @@
+{
+  "id": "scratch-llm",
+  "name": "From-Scratch LLM",
+  "tagline": "25M + 110M models, pretrained & SFT'd from zero in pure PyTorch",
+  "why": "To prove I understand language models from the ground up — not just calling an API, but building the training loop, tokenizer, and architecture myself.",
+  "what": "Two transformer models I trained from scratch using only PyTorch: a 25M and a 110M, both pretrained and supervised-fine-tuned by hand. Inference runs live on the host GPU so you can chat with them and judge the output quality.",
+  "tech": ["PyTorch", "Python", "venv", "Transformers (from scratch)", "CUDA"],
+  "subdomain": "model",
+  "github": "https://github.com/herabergen/from-scratch-llm",
+  "port": 8001,
+  "gated": false,
+  "status": "live",
+  "disclaimer": "<strong>Live demo on a personal GPU.</strong> These are models I trained from scratch, so output won't match commercial LLMs — that's the point. Inference may occasionally be slow or briefly unavailable depending on GPU load."
+}

@@ -1,0 +1,21 @@
+# ── /etc/systemd/system/heraberg-watch.service ──
+# Watches projects/ and regenerates public/projects.json whenever
+# you drop or edit a project folder. Optional but enables the
+# "drop a folder and it updates" workflow with zero manual steps.
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now heraberg-watch
+
+[Unit]
+Description=Heraberg project folder watcher (auto-rebuild projects.json)
+After=network-online.target
+
+[Service]
+Type=simple
+User=youruser
+WorkingDirectory=/home/youruser/heraberg-kit
+ExecStart=/usr/bin/node --env-file=.env build.mjs --watch
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

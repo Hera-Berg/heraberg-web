@@ -1,0 +1,23 @@
+# ── /etc/systemd/system/heraberg.service ──
+# Runs the glue server (poster + router + gate) on boot.
+# Edit User= and the two paths to match your laptop, then:
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now heraberg
+
+[Unit]
+Description=Heraberg glue server (poster + project router + gate)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=youruser
+WorkingDirectory=/home/youruser/heraberg-kit
+# --env-file loads .env (Node 20+). Build once on start, then serve.
+ExecStartPre=/usr/bin/node --env-file=.env build.mjs
+ExecStart=/usr/bin/node --env-file=.env server.mjs
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

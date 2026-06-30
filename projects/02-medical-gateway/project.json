@@ -1,0 +1,14 @@
+{
+  "id": "medical-gateway",
+  "name": "Medical AI Gateway",
+  "tagline": "RAG-backed medical document analysis with multi-pass reasoning",
+  "why": "The culmination of my double degree — an end-to-end system bringing together RAG, scalability, multi-model orchestration and medical analysis into one production-shaped pipeline. HOW IS IT BETTER THAN EXISTING AND SCALABILITY FOR BIGGER DATA AND USERS",
+  "what": "Analyzes uploaded medical documents against vetted sources and papers via RAG, with adjustable reasoning depth. Routes across models to compare cost and quality versus a single ChatGPT subscription. WHAT PROBLEM DOES IT SOLVE WHAT IS NOT WORKING MULTI AGENT WORKFLOW",
+  "tech": ["Python", "Docker", "RAG", "Vector DB", "Multi-model routing", "RunPod (serverless GPU)"],
+  "subdomain": "medical",
+  "github": "https://github.com/herabergen/medical-ai-gateway",
+  "port": 8002,
+  "gated": true,
+  "status": "live",
+  "disclaimer": "<strong>Demo only — not a medical device.</strong> Do not rely on this for any real clinical decision. You don't need to upload real records: sample data is available. Currently the demo holds only <strong>diabetes</strong> data (it's hosted on a personal machine, so space is limited) — diabetes is the only condition tested so far, and it performs well. The full version is designed to cover many more conditions, and results should generalise similarly. Inference runs on rented GPUs and may be slow or temporarily unavailable."
+}

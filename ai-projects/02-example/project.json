@@ -1,0 +1,10 @@
+{
+  "id": "lab-demo-example",
+  "tag": "demo",
+  "name": "Live demo",
+  "blurb": "Something interactive a recruiter can click and play with.",
+  "subdomain": "lab2",
+  "port": 9001,
+  "github": "https://github.com/herabergen/lab-demo-example",
+  "status": "live"
+}

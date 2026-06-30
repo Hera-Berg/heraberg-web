@@ -1,0 +1,20 @@
+[
+  {
+    "id": "lab-tool-example",
+    "tag": "tool",
+    "name": "Name it",
+    "blurb": "One line on what it is and why it's cool.",
+    "demo": "http://lab1.localhost:5080",
+    "github": "https://github.com/herabergen/lab-tool-example",
+    "status": "live"
+  },
+  {
+    "id": "lab-demo-example",
+    "tag": "demo",
+    "name": "Live demo",
+    "blurb": "Something interactive a recruiter can click and play with.",
+    "demo": "http://lab2.localhost:5080",
+    "github": "https://github.com/herabergen/lab-demo-example",
+    "status": "live"
+  }
+]

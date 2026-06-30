@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HERABERG — portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  /* ───────────────────────────────────────────────
+     TOKENS — arctic palette, cold mass + polar-dawn warmth
+  ─────────────────────────────────────────────── */
+  :root{
+    --abyss:#04101c;
+    --deep:#0a2f47;
+    --mid:#12506e;
+    --ice:#bfe6f0;
+    --frost:#eaf6fa;
+    --dawn:#ff9d6e;          /* the one warm accent — dawn hitting ice */
+    --dawn-soft:#ffd9b0;
+    --text:#e9f6fa;
+    --muted:#8fb3c4;
+    --line:rgba(191,230,240,.18);
+
+    --display:"Syne", system-ui, sans-serif;
+    --body:"Hanken Grotesk", system-ui, sans-serif;
+    --mono:"JetBrains Mono", ui-monospace, monospace;
+
+    --waterline:56%;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{height:100%;scroll-behavior:smooth}
+  body{
+    min-height:100%;
+    font-family:var(--body);
+    color:var(--text);
+    background:var(--abyss);
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ── the scene: one viewport, no scroll ─────────── */
+  .scene{
+    position:relative;
+    height:100dvh;
+    width:100%;
+    overflow:hidden;
+    isolation:isolate;
+    /* sky → water in one stack, split at the waterline */
+    background:
+      linear-gradient(180deg,
+        #14202e 0%,
+        #1b2f40 22%,
+        #20465e 40%,
+        #1b5876 var(--waterline),
+        #0e405c calc(var(--waterline) + 1%),
+        #082d44 72%,
+        var(--abyss) 100%);
+  }
+
+  /* polar-dawn glow bleeding from top */
+  .scene::before{
+    content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(120% 60% at 70% -10%, rgba(255,157,110,.28), transparent 55%),
+      radial-gradient(90% 50% at 20% 0%, rgba(255,217,176,.16), transparent 60%);
+  }
+
+  /* the glowing waterline band */
+  .scene::after{
+    content:"";position:absolute;left:0;right:0;top:var(--waterline);z-index:2;
+    height:2px;pointer-events:none;
+    background:linear-gradient(90deg,transparent, rgba(207,234,242,.7) 30%, rgba(255,217,176,.6) 55%, rgba(207,234,242,.7) 75%, transparent);
+    box-shadow:0 0 24px 6px rgba(170,220,235,.25);
+    animation:shimmer 6s ease-in-out infinite;
+  }
+  @keyframes shimmer{50%{opacity:.5}}
+
+  /* ── header ─────────────────────────────────────── */
+  header{
+    position:absolute;top:0;left:0;right:0;z-index:6;
+    text-align:center;padding:clamp(14px,4vh,52px) 20px 0;
+    pointer-events:none;
+  }
+  .title{
+    font-family:var(--display);
+    font-weight:800;
+    font-size:clamp(44px,9vw,128px);
+    letter-spacing:.04em;
+    line-height:.9;
+    color:var(--frost);
+    text-shadow:0 0 40px rgba(255,178,130,.35), 0 2px 0 rgba(4,16,28,.4);
+    animation:rise .9s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .title b{color:var(--dawn);font-weight:800}
+  .tagline{
+    margin-top:14px;font-size:clamp(13px,1.5vw,16px);color:var(--muted);
+    font-family:var(--mono);letter-spacing:.02em;
+    animation:rise .9s .1s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:none}}
+
+  /* ── the iceberg ────────────────────────────────── */
+  .berg{
+    position:absolute;left:50%;top:calc(var(--waterline) - 16vh);
+    transform:translateX(-50%);
+    width:min(46vw,520px);height:auto;z-index:3;
+    filter:drop-shadow(0 -8px 30px rgba(255,200,160,.18));
+    animation:rise 1.2s .2s cubic-bezier(.2,.8,.2,1) both;
+  }
+
+  /* drifting bubbles under the surface */
+  .bubbles{position:absolute;inset:var(--waterline) 0 0 0;z-index:1;pointer-events:none;overflow:hidden}
+  .bubble{position:absolute;bottom:-20px;border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.5), rgba(191,230,240,.05));
+    animation:floatUp linear infinite}
+  @keyframes floatUp{to{transform:translateY(-70vh);opacity:0}}
+
+  /* ── detail panel that "surfaces" on hover ──────── */
+  .panel{
+    /* Anchored by its BOTTOM edge, sitting just above the card row.
+       Because the bottom is pinned, taller content pushes the TOP up
+       automatically — so the top edge is dynamic with the text length.
+       --panel-bottom = distance from viewport bottom up to the panel's
+       lower edge (cards sit below this). */
+    --panel-bottom:clamp(150px,26vh,260px);
+    --panel-safe-top:clamp(12px,3vh,28px);   /* never closer than this to the top */
+    position:absolute;left:50%;bottom:var(--panel-bottom);top:auto;
+    transform:translate(-50%,28px);
+    width:min(620px,90vw);z-index:8;        /* above the header (z-index:6) */
+    /* never taller than the gap between the safe top and the panel bottom;
+       the dynamic anchor keeps content visible, so we simply clip the
+       (rare) overflow rather than show a scrollbar */
+    max-height:calc(100dvh - var(--panel-bottom) - var(--panel-safe-top));
+    overflow:hidden;
+    /* slightly more opaque so it stays readable when it overlaps the title */
+    background:rgba(8,32,50,.82);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:22px 26px;
+    backdrop-filter:blur(20px) saturate(1.1);
+    -webkit-backdrop-filter:blur(20px) saturate(1.1);
+    box-shadow:0 20px 60px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06);
+    opacity:0;visibility:hidden;pointer-events:none;
+    transition:opacity .45s ease, transform .45s cubic-bezier(.2,.85,.2,1), visibility .45s;
+  }
+  .panel.show{opacity:1;visibility:visible;transform:translate(-50%,0);pointer-events:auto}
+  .panel h2{font-family:var(--display);font-size:clamp(22px,3vw,30px);color:var(--frost);letter-spacing:.01em}
+  .panel .lead{color:var(--dawn-soft);font-size:14px;margin-top:2px;font-family:var(--mono)}
+  .panel .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 26px;margin-top:16px}
+  .panel .blk h3{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;font-weight:600}
+  .panel .blk p{font-size:14px;line-height:1.5;color:#cfe6ef}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
+  .chip{font-family:var(--mono);font-size:11.5px;color:var(--ice);
+    border:1px solid var(--line);border-radius:7px;padding:4px 9px;background:rgba(191,230,240,.05)}
+  .panel .actions{display:flex;align-items:center;gap:10px;margin-top:18px;flex-wrap:wrap}
+  .panel .go{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--mono);font-size:13px;font-weight:500;
+    color:var(--abyss);background:var(--dawn);
+    padding:10px 18px;border-radius:9px;text-decoration:none;
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .panel .go:hover{transform:translateX(3px);box-shadow:0 8px 24px rgba(255,157,110,.35)}
+  .panel .go.disabled{background:rgba(143,179,196,.2);color:var(--muted);pointer-events:none}
+  /* small rounded square GitHub button beside "Visit project" */
+  .panel .gh{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:40px;height:40px;border-radius:9px;
+    color:var(--ice);background:rgba(191,230,240,.06);
+    border:1px solid var(--line);text-decoration:none;
+    transition:transform .2s ease, border-color .2s ease, color .2s ease, background .2s ease;
+  }
+  .panel .gh:hover{transform:translateY(-2px);color:var(--frost);
+    border-color:rgba(94,242,208,.5);background:rgba(94,242,208,.08)}
+  .panel .gh svg{width:20px;height:20px}
+
+  /* ── project cards (the tip) ────────────────────── */
+  .fleet{
+    position:absolute;left:0;right:0;bottom:clamp(20px,5vh,52px);z-index:4;
+    display:flex;justify-content:center;align-items:flex-end;
+    gap:clamp(14px,2.5vw,34px);padding:0 20px;flex-wrap:wrap;
+  }
+  .card{
+    position:relative;width:min(230px,40vw);
+    background:rgba(11,47,71,.45);
+    border:1px solid var(--line);border-radius:14px;
+    padding:18px 18px 16px;cursor:pointer;
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    color:inherit;text-align:left;font:inherit;
+    transition:transform .35s cubic-bezier(.2,.85,.2,1), border-color .3s, box-shadow .35s;
+    animation:surface .9s cubic-bezier(.2,.8,.2,1) both;
+    animation-delay:calc(.35s + var(--i) * .12s);
+  }
+  @keyframes surface{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+  .card .idx{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .card .name{font-family:var(--display);font-weight:700;font-size:19px;margin-top:4px;color:var(--frost)}
+  .card .mini{font-size:12.5px;color:var(--muted);margin-top:5px;line-height:1.4}
+  .card .status{display:inline-flex;align-items:center;gap:6px;margin-top:11px;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--ice)}
+  .card .dot{width:7px;height:7px;border-radius:50%;background:#4fd6a0;box-shadow:0 0 8px #4fd6a0}
+
+  .card:hover,.card:focus-visible{
+    transform:translateY(-12px);
+    border-color:rgba(255,157,110,.55);
+    box-shadow:0 -2px 0 rgba(255,157,110,.4), 0 24px 50px rgba(0,0,0,.45);
+    outline:none;
+  }
+  .card:focus-visible{box-shadow:0 0 0 3px rgba(255,217,176,.6), 0 24px 50px rgba(0,0,0,.45)}
+
+  /* frozen / work-in-progress card */
+  .card.frozen{cursor:pointer}
+  .card.frozen::after{
+    content:"";position:absolute;inset:0;border-radius:14px;pointer-events:none;
+    background:linear-gradient(135deg, rgba(207,234,242,.14), rgba(255,255,255,.04) 40%, rgba(207,234,242,.1));
+    mix-blend-mode:screen;
+  }
+  .card.frozen .dot{background:#7fb6cf;box-shadow:0 0 8px #7fb6cf}
+  .card.frozen .name{color:#cfe6ef}
+
+  /* bobbing while idle (one fleet element offset for life) */
+  .card:nth-child(2){animation-name:surface, bob}
+  /* reduce motion */
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    *{animation:none !important;transition:none !important}
+    .panel{transition:opacity .2s !important}
+  }
+
+  /* ── depth-gauge nav (right rail, marks how deep you are) ── */
+  .depth-gauge{
+    position:fixed;right:26px;top:50%;transform:translateY(-50%);z-index:20;
+    display:flex;flex-direction:column;align-items:flex-end;
+    animation:rise .9s .3s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .depth-gauge::before{content:"";position:absolute;right:4px;top:16px;bottom:16px;width:1px;background:var(--line);z-index:-1}
+  .depth-gauge a{
+    display:flex;align-items:center;gap:10px;justify-content:flex-end;
+    text-decoration:none;color:var(--muted);font-family:var(--mono);font-size:12px;
+    padding:11px 0;transition:color .3s;
+  }
+  .depth-gauge a .lbl{opacity:0;transform:translateX(6px);transition:opacity .3s, transform .3s}
+  .depth-gauge a:hover .lbl,.depth-gauge a.active .lbl{opacity:1;transform:none}
+  .depth-gauge a .node{width:9px;height:9px;border-radius:50%;border:1px solid var(--muted);background:var(--abyss);transition:all .3s;flex:none}
+  .depth-gauge a:hover,.depth-gauge a:focus-visible{color:#5ef2d0;outline:none}
+  .depth-gauge a.active{color:#5ef2d0}
+  .depth-gauge a.active .node{background:#5ef2d0;border-color:#5ef2d0;box-shadow:0 0 10px #5ef2d0}
+
+  /* ── the depths: AI work, below the waterline ──────── */
+  #deep{
+    position:relative;
+    background:linear-gradient(180deg, var(--abyss) 0%, #02080f 55%, #01040a 100%);
+    border-top:1px solid var(--line);
+    padding:clamp(64px,13vh,128px) 20px clamp(48px,9vh,88px);
+  }
+  #deep::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(70% 40% at 50% 0%, rgba(94,242,208,.10), transparent 60%);
+  }
+  .deep-inner{max-width:980px;margin:0 auto;position:relative;z-index:1}
+  .deep-eyebrow{font-family:var(--mono);font-size:13px;color:var(--muted)}
+  .deep-title{font-family:var(--display);font-weight:800;font-size:clamp(34px,6vw,72px);
+    color:var(--frost);margin-top:8px;letter-spacing:.02em;text-shadow:0 0 40px rgba(94,242,208,.25)}
+  .deep-sub{color:var(--muted);margin-top:10px;max-width:52ch;line-height:1.5}
+  .links{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-top:36px}
+  .link-card{display:flex;flex-direction:column;gap:6px;color:inherit;
+    background:rgba(10,40,58,.4);border:1px solid var(--line);border-radius:14px;padding:18px;
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    transition:transform .3s cubic-bezier(.2,.85,.2,1), border-color .3s, box-shadow .3s}
+  .link-card:hover,.link-card:focus-within{transform:translateY(-6px);
+    border-color:rgba(94,242,208,.5);box-shadow:0 18px 40px rgba(0,0,0,.45);outline:none}
+  .link-tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#5ef2d0}
+  .link-name{font-family:var(--display);font-weight:700;font-size:18px;color:var(--frost)}
+  .link-blurb{font-size:13px;color:var(--muted);line-height:1.45;flex:1}
+  .link-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+  .link-go{font-family:var(--mono);font-size:12px;color:var(--ice);text-decoration:none;
+    transition:color .2s ease}
+  a.link-go:hover{color:#5ef2d0}
+  .link-go.muted{color:var(--muted)}
+  .link-gh{display:inline-flex;align-items:center;justify-content:center;
+    width:32px;height:32px;border-radius:8px;flex:none;
+    color:var(--muted);background:rgba(191,230,240,.05);
+    border:1px solid var(--line);text-decoration:none;
+    transition:color .2s ease, border-color .2s ease, background .2s ease, transform .2s ease}
+  .link-gh:hover{color:var(--frost);border-color:rgba(94,242,208,.5);
+    background:rgba(94,242,208,.08);transform:translateY(-1px)}
+  .link-gh svg{width:17px;height:17px}
+  .surface-link{display:inline-block;margin-top:40px;font-family:var(--mono);font-size:13px;
+    color:var(--muted);text-decoration:none;transition:color .25s}
+  .surface-link:hover{color:#5ef2d0}
+
+  /* shared section scaffolding for the deeper zones */
+  .wrap{max-width:980px;margin:0 auto;position:relative;z-index:1}
+  .sec-eyebrow{font-family:var(--mono);font-size:13px;color:var(--muted)}
+  .sec-title{font-family:var(--display);font-weight:800;font-size:clamp(34px,6vw,72px);
+    color:var(--frost);margin-top:8px;letter-spacing:.02em;text-shadow:0 0 40px rgba(94,242,208,.22)}
+  .sec-sub{color:var(--muted);margin-top:10px;max-width:54ch;line-height:1.5}
+
+  /* ── skills / proficiency ──────────────────────────── */
+  #skills{
+    position:relative;background:linear-gradient(180deg,#01040a,#020b15 100%);
+    border-top:1px solid var(--line);padding:clamp(64px,12vh,120px) 20px;
+  }
+  .bars{margin-top:38px;display:grid;gap:18px;max-width:680px}
+  .bar-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+  .bar-head .nm{font-family:var(--display);font-weight:700;color:var(--frost);font-size:15px}
+  .bar-head .lv{font-family:var(--mono);color:#5ef2d0;font-size:11.5px;letter-spacing:.05em}
+  .bar-track{height:9px;border-radius:6px;background:rgba(143,179,196,.12);overflow:hidden}
+  .bar-fill{height:100%;width:0;border-radius:6px;
+    background:linear-gradient(90deg,#2a8f8f,#5ef2d0);
+    box-shadow:0 0 14px rgba(94,242,208,.4);
+    transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+  .revealed .bar-fill{width:var(--lvl)}
+  .strengths{margin-top:48px;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+  .strength{background:rgba(10,40,58,.4);border:1px solid var(--line);border-radius:12px;
+    padding:16px 17px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  .strength h4{font-family:var(--display);font-size:15px;color:var(--frost);margin-bottom:6px}
+  .strength p{font-size:12.5px;color:var(--muted);line-height:1.45}
+
+  /* ── find me / socials ─────────────────────────────── */
+  #socials{
+    position:relative;background:#020b15;border-top:1px solid var(--line);
+    padding:clamp(64px,12vh,120px) 20px;
+  }
+  #socials::before{content:"";position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(60% 40% at 50% 0%, rgba(94,242,208,.08), transparent 60%)}
+  .socials{margin-top:36px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+  .social{display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;
+    background:rgba(10,40,58,.4);border:1px solid var(--line);border-radius:14px;padding:15px 17px;
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    transition:transform .3s cubic-bezier(.2,.85,.2,1),border-color .3s,box-shadow .3s}
+  .social:hover,.social:focus-visible{transform:translateY(-5px);border-color:rgba(94,242,208,.5);
+    box-shadow:0 16px 36px rgba(0,0,0,.4);outline:none}
+  .social .ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;flex:none;
+    background:rgba(94,242,208,.12);color:var(--ice)}
+  .social .meta{display:flex;flex-direction:column;min-width:0}
+  .social .meta .nm{font-family:var(--display);font-weight:700;font-size:15px;color:var(--frost)}
+  .social .meta .hd{font-family:var(--mono);font-size:11.5px;color:var(--muted);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* ── experience (work in progress) ─────────────────── */
+  #experience{
+    position:relative;background:linear-gradient(180deg,#020b15,#01060d 100%);
+    border-top:1px solid var(--line);padding:clamp(64px,12vh,120px) 20px clamp(80px,14vh,140px);
+  }
+  .wip-card{margin-top:34px;max-width:680px;border:1px dashed var(--line);border-radius:16px;
+    padding:28px 30px;background:rgba(10,40,58,.22);position:relative;overflow:hidden}
+  .wip-tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;
+    letter-spacing:.08em;text-transform:uppercase;color:#7fb6cf}
+  .wip-tag .dot{width:7px;height:7px;border-radius:50%;background:#7fb6cf;box-shadow:0 0 8px #7fb6cf}
+  .wip-card p{color:var(--muted);margin-top:13px;line-height:1.6;max-width:54ch}
+  .ghosts{margin-top:24px;display:grid;gap:13px}
+  .ghost{display:flex;gap:14px;align-items:center;opacity:.45}
+  .ghost .gdot{width:10px;height:10px;border-radius:50%;border:1px solid var(--muted);flex:none}
+  .ghost .gline{height:9px;border-radius:6px;background:linear-gradient(90deg,rgba(143,179,196,.22),transparent)}
+  .foot{max-width:980px;margin:46px auto 0;font-family:var(--mono);font-size:12px;color:var(--muted);
+    display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .foot a{color:var(--muted);text-decoration:none;transition:color .25s}
+  .foot a:hover{color:#5ef2d0}
+
+  /* ── mobile: let it breathe + scroll ────────────── */
+  @media (max-width:720px){
+    body{overflow-y:auto}
+    .scene{height:auto;min-height:100dvh;padding-bottom:40px}
+    .berg{position:relative;top:0;margin:14vh auto 0;display:block;width:60vw}
+    .panel{position:relative;left:0;top:0;transform:none;margin:18px auto 0;
+      max-height:none;overflow:visible;
+      opacity:1;visibility:visible;pointer-events:auto;display:none}
+    .panel.show{display:block}
+    .fleet{position:relative;bottom:0;margin-top:24px;flex-direction:column;align-items:center}
+    .card{width:min(420px,86vw)}
+    .depth-gauge{display:none}
+  }
+</style>
+</head>
+<body>
+  <nav class="depth-gauge" aria-label="Sections">
+    <a href="#top"><span class="lbl">Surface</span><span class="node"></span></a>
+    <a href="#deep"><span class="lbl">The Lab</span><span class="node"></span></a>
+    <a href="#skills"><span class="lbl">Skills</span><span class="node"></span></a>
+    <a href="#socials"><span class="lbl">Find me</span><span class="node"></span></a>
+    <a href="#experience"><span class="lbl">Experience</span><span class="node"></span></a>
+  </nav>
+  <div class="scene" id="top">
+    <header>
+      <h1 class="title">HERA<b>BERG</b></h1>
+      <p class="tagline">// hand-built, no AI — hover a card to see what's beneath</p>
+    </header>
+
+    <!-- iceberg -->
+    <svg class="berg" viewBox="0 0 400 460" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- above water: bright tip -->
+      <polygon points="200,20 130,150 200,150 250,110 290,150 330,150" fill="#eaf6fa"/>
+      <polygon points="200,20 200,150 130,150" fill="#cfe6ef"/>
+      <polygon points="250,110 290,150 330,150 280,60" fill="#dceef5"/>
+      <!-- underwater mass: translucent -->
+      <polygon points="130,150 330,150 380,300 320,440 90,440 20,300" fill="#2a6f93" opacity="0.42"/>
+      <polygon points="200,150 330,150 380,300 240,360" fill="#1d5a7c" opacity="0.45"/>
+      <polygon points="130,150 200,150 240,360 90,440 20,300" fill="#15486a" opacity="0.5"/>
+      <polygon points="240,360 320,440 90,440" fill="#0f3a58" opacity="0.55"/>
+    </svg>
+
+    <div class="bubbles" id="bubbles" aria-hidden="true"></div>
+
+    <!-- shared surfacing panel -->
+    <div class="panel" id="panel" role="dialog" aria-live="polite"></div>
+
+    <!-- project fleet (built from data) -->
+    <div class="fleet" id="fleet"></div>
+  </div>
+
+  <!-- ── the depths: AI work ───────────────────────── -->
+  <section id="deep">
+    <div class="deep-inner">
+      <p class="deep-eyebrow">// below the waterline — built with AI</p>
+      <h1 class="deep-title">The Lab</h1>
+      <p class="deep-sub">Experiments, tools, and side-quests I've built with AI — the rougher, faster, more curious stuff that doesn't get its own iceberg.</p>
+      <div class="links" id="ailinks"></div>
+      <a class="surface-link" href="#top">↑ back to the surface</a>
+    </div>
+  </section>
+
+  <!-- ── skills / proficiency ──────────────────────── -->
+  <section id="skills">
+    <div class="wrap">
+      <p class="sec-eyebrow">// deeper — what I work in</p>
+      <h2 class="sec-title">Proficiency</h2>
+      <p class="sec-sub">Languages I reach for, and how confident I am in each. Below that, the things I'm actually good at — the parts that don't fit in a progress bar.</p>
+      <div class="bars" id="bars"></div>
+      <div class="strengths" id="strengths"></div>
+    </div>
+  </section>
+
+  <!-- ── find me / socials ────────────────────────── -->
+  <section id="socials">
+    <div class="wrap">
+      <p class="sec-eyebrow">// other places I exist</p>
+      <h2 class="sec-title">Find me</h2>
+      <p class="sec-sub">The usual channels — code, network, inbox.</p>
+      <div class="socials" id="socials-grid"></div>
+    </div>
+  </section>
+
+  <!-- ── experience (work in progress) ─────────────── -->
+  <section id="experience">
+    <div class="wrap">
+      <p class="sec-eyebrow">// the deepest layer</p>
+      <h2 class="sec-title">Experience</h2>
+      <div class="wip-card">
+        <span class="wip-tag"><span class="dot"></span>still being charted</span>
+        <p>This is where roles, internships, and real-world work will live. It's still to be written and discovered — I'm building the projects above first, and this section fills in as the experience does.</p>
+        <div class="ghosts">
+          <div class="ghost"><span class="gdot"></span><span class="gline" style="width:62%"></span></div>
+          <div class="ghost"><span class="gdot"></span><span class="gline" style="width:78%"></span></div>
+          <div class="ghost"><span class="gdot"></span><span class="gline" style="width:48%"></span></div>
+        </div>
+      </div>
+      <div class="foot">
+        <span>HERABERG — @herabergen</span>
+        <a href="#top">↑ back to the surface</a>
+      </div>
+    </div>
+  </section>
+
+<script>
+/* ───────────────────────────────────────────────
+   PROJECTS — this is the only thing you edit by hand.
+   The build script (build.mjs) regenerates this list
+   automatically from projects/<name>/project.json,
+   so eventually you just drop a folder and rebuild.
+─────────────────────────────────────────────── */
+const FALLBACK = [
+  {
+    id:"project1",
+    name:"Project One",
+    tagline:"one-line hook a recruiter reads first",
+    why:"The itch I was scratching — the real reason this exists.",
+    what:"What it does for the person using it, in plain terms.",
+    tech:["Python","FastAPI","Postgres","Docker"],
+    url:"https://project1.heraberg.com",
+    status:"live"
+  },
+  {
+    id:"project2",
+    name:"Project Two",
+    tagline:"a sharp, specific value statement",
+    why:"What problem made me build it, and who it's for.",
+    what:"The outcome it produces — the thing it actually helps with.",
+    tech:["Python","venv","Flask","SQLite"],
+    url:"https://project2.heraberg.com",
+    status:"live"
+  },
+  {
+    id:"project3",
+    name:"Project Three",
+    tagline:"still surfacing",
+    why:"Where this is headed and why it'll matter.",
+    what:"What it'll do once it's out of the water.",
+    tech:["TBD"],
+    url:"",
+    status:"wip"
+  }
+];
+
+const fleet = document.getElementById('fleet');
+const panel = document.getElementById('panel');
+let hideTimer;
+
+function renderPanel(p){
+  const live = p.status === 'live' && p.url;
+  panel.innerHTML = `
+    <h2>${p.name}</h2>
+    <div class="lead">${p.tagline}</div>
+    <div class="grid">
+      <div class="blk"><h3>Why I built it</h3><p>${p.why}</p></div>
+      <div class="blk"><h3>What it does</h3><p>${p.what}</p></div>
+    </div>
+    <div class="blk" style="margin-top:14px"><h3>Stack</h3>
+      <div class="chips">${p.tech.map(t=>`<span class="chip">${t}</span>`).join('')}</div>
+    </div>
+    <div class="actions">
+      <a class="go ${live?'':'disabled'}" ${live?`href="${p.url}"`:''}>
+        ${live ? 'Visit project →' : 'Surfacing soon'}
+      </a>
+      ${p.github ? `<a class="gh" href="${p.github}" target="_blank" rel="noopener" aria-label="View ${p.name} source on GitHub" title="View source on GitHub"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 014 0c1.53-1.03 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>` : ''}
+    </div>`;
+  panel.classList.add('show');
+}
+function hidePanel(){ panel.classList.remove('show'); }
+
+function buildCards(projects){
+  fleet.innerHTML = '';
+  projects.forEach((p,i)=>{
+    const card = document.createElement('button');
+    card.className = 'card' + (p.status==='wip'?' frozen':'');
+    card.style.setProperty('--i', i);
+    card.setAttribute('aria-label', p.name + ' — ' + p.tagline);
+    card.innerHTML = `
+      <span class="idx">0${i+1}</span>
+      <div class="name">${p.name}</div>
+      <div class="mini">${p.tagline}</div>
+      <div class="status"><span class="dot"></span>${p.status==='wip'?'IN PROGRESS':'LIVE'}</div>`;
+    const show = ()=>{ clearTimeout(hideTimer); renderPanel(p); };
+    card.addEventListener('mouseenter', show);
+    card.addEventListener('focus', show);
+    card.addEventListener('click', show);
+    fleet.appendChild(card);
+  });
+}
+
+// hide when the pointer leaves the whole interactive zone
+['#fleet','#panel'].forEach(()=>{});
+document.querySelector('.scene').addEventListener('mouseleave', ()=>{ hideTimer = setTimeout(hidePanel, 200); });
+fleet.addEventListener('mouseleave', ()=>{ hideTimer = setTimeout(hidePanel, 250); });
+fleet.addEventListener('mouseenter', ()=> clearTimeout(hideTimer));
+panel.addEventListener('mouseenter', ()=> clearTimeout(hideTimer));
+panel.addEventListener('mouseleave', ()=>{ hideTimer = setTimeout(hidePanel, 200); });
+
+// bubbles
+const bub = document.getElementById('bubbles');
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
+  for(let i=0;i<18;i++){
+    const b=document.createElement('span');b.className='bubble';
+    const s=2+Math.random()*7;
+    b.style.width=b.style.height=s+'px';
+    b.style.left=Math.random()*100+'%';
+    b.style.animationDuration=(7+Math.random()*9)+'s';
+    b.style.animationDelay=(-Math.random()*12)+'s';
+    b.style.opacity=.15+Math.random()*.3;
+    bub.appendChild(b);
+  }
+}
+
+// load data: prefer build-generated projects.json, fall back to inline
+fetch('./projects.json')
+  .then(r=> r.ok ? r.json() : Promise.reject())
+  .then(data=> buildCards(Array.isArray(data)?data:FALLBACK))
+  .catch(()=> buildCards(FALLBACK));
+
+/* ───────────────────────────────────────────────
+   AI LAB — your AI experiments / links.
+   Edit this list directly, or generate an ai.json
+   the same way build.mjs makes projects.json.
+─────────────────────────────────────────────── */
+const AI_LINKS = [
+  { tag:"tool",   name:"Name it",      blurb:"One line on what it is and why it's cool.", url:"#" },
+  { tag:"writeup",name:"A thing I wrote", blurb:"Notes, a blog post, or a teardown of an AI build.", url:"#" },
+  { tag:"demo",   name:"Live demo",     blurb:"Something interactive a recruiter can click and play with.", url:"#" },
+  { tag:"repo",   name:"On GitHub",     blurb:"Source for an AI project worth a look.", url:"https://github.com/herabergen" }
+];
+
+const ailinks = document.getElementById('ailinks');
+const GH_SVG = `<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 014 0c1.53-1.03 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>`;
+function buildAI(items){
+  ailinks.innerHTML = items.map(l=>{
+    const demo = l.demo || l.url || '';      // l.url kept for inline-fallback compatibility
+    const hasDemo = demo && demo !== '#';
+    const demoLink = hasDemo
+      ? `<a class="link-go" href="${demo}" target="_blank" rel="noopener">open demo →</a>`
+      : `<span class="link-go muted">demo soon</span>`;
+    const ghLink = l.github
+      ? `<a class="link-gh" href="${l.github}" target="_blank" rel="noopener" aria-label="${l.name} repository" title="View source on GitHub">${GH_SVG}</a>`
+      : '';
+    return `
+    <div class="link-card">
+      <span class="link-tag">${l.tag || 'ai'}</span>
+      <span class="link-name">${l.name}</span>
+      <span class="link-blurb">${l.blurb || ''}</span>
+      <div class="link-foot">${demoLink}${ghLink}</div>
+    </div>`;
+  }).join('');
+}
+fetch('./ai.json')
+  .then(r=> r.ok ? r.json() : Promise.reject())
+  .then(data=> buildAI(Array.isArray(data)?data:AI_LINKS))
+  .catch(()=> buildAI(AI_LINKS));
+
+/* ───────────────────────────────────────────────
+   PROFICIENCY — graphical bars + strengths cards.
+   Reads public/proficiency.json (two sections:
+   "bars" and "strengths"). Falls back to the inline
+   defaults below if the file is missing.
+─────────────────────────────────────────────── */
+const PROFICIENCY_FALLBACK = {
+  bars: [
+    { name:"Python",      level:"92%", label:"Advanced" },
+    { name:"JavaScript",  level:"78%", label:"Proficient" },
+    { name:"Bash / Shell",level:"74%", label:"Proficient" },
+    { name:"SQL",         level:"68%", label:"Comfortable" },
+    { name:"HTML / CSS",  level:"80%", label:"Proficient" },
+    { name:"TypeScript",  level:"55%", label:"Learning" }
+  ],
+  strengths: [
+    { title:"Self-hosting & tunnels", blurb:"Exposing local services to the world cleanly with Cloudflare Tunnel." },
+    { title:"Containerization",       blurb:"Reproducible Docker setups that just spin up." },
+    { title:"Backend & APIs",         blurb:"Designing and shipping services in Python." },
+    { title:"Linux & the CLI",        blurb:"At home in the terminal, scripting the boring parts away." }
+  ]
+};
+
+function buildProficiency(data){
+  const bars = Array.isArray(data?.bars) ? data.bars : [];
+  const strengths = Array.isArray(data?.strengths) ? data.strengths : [];
+  document.getElementById('bars').innerHTML = bars.map(s=>`
+    <div class="bar">
+      <div class="bar-head"><span class="nm">${s.name}</span><span class="lv">${s.label ? s.label+' · ' : ''}${s.level}</span></div>
+      <div class="bar-track"><div class="bar-fill" style="--lvl:${s.level}"></div></div>
+    </div>`).join('');
+  document.getElementById('strengths').innerHTML = strengths.map(s=>`
+    <div class="strength"><h4>${s.title}</h4><p>${s.blurb || ''}</p></div>`).join('');
+
+  // (re)attach the reveal animation now that bars exist
+  const skills = document.getElementById('skills');
+  if (skills.__io) skills.__io.disconnect();
+  skills.__io = new IntersectionObserver((entries,obs)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('revealed'); obs.unobserve(e.target); } });
+  }, { threshold:.25 });
+  skills.__io.observe(skills);
+}
+
+fetch('./proficiency.json')
+  .then(r=> r.ok ? r.json() : Promise.reject())
+  .then(data=> buildProficiency(data && (data.bars||data.strengths) ? data : PROFICIENCY_FALLBACK))
+  .catch(()=> buildProficiency(PROFICIENCY_FALLBACK));
+
+/* ───────────────────────────────────────────────
+   SOCIALS — where companies can find you.
+─────────────────────────────────────────────── */
+const SOCIALS = [
+  { icon:"github",   name:"GitHub",   handle:"@herabergen", url:"https://github.com/herabergen" },
+  { icon:"linkedin", name:"LinkedIn", handle:"in/your-handle", url:"#" },
+  { icon:"email",    name:"Email",    handle:"you@heraberg.com", url:"mailto:you@heraberg.com" }
+];
+const ICONS = {
+  github:`<svg viewBox="0 0 16 16" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 014 0c1.53-1.03 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>`,
+  linkedin:`<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.07 2.07 0 110-4.14 2.07 2.07 0 010 4.14zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.22.79 24 1.77 24h20.45c.98 0 1.78-.78 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>`,
+  email:`<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>`,
+  link:`<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>`
+};
+document.getElementById('socials-grid').innerHTML = SOCIALS.map(s=>`
+  <a class="social" href="${s.url}" target="_blank" rel="noopener">
+    <span class="ic">${ICONS[s.icon] || ICONS.link}</span>
+    <span class="meta"><span class="nm">${s.name}</span><span class="hd">${s.handle}</span></span>
+  </a>`).join('');
+
+// (bar reveal is handled inside buildProficiency once bars are rendered)
+
+// light up the depth-gauge node for whichever section you're in
+const navLinks = {};
+document.querySelectorAll('.depth-gauge a').forEach(a=> navLinks[a.getAttribute('href').slice(1)] = a);
+const navObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      Object.values(navLinks).forEach(a=> a.classList.remove('active'));
+      navLinks[e.target.id]?.classList.add('active');
+    }
+  });
+}, { rootMargin:'-45% 0px -45% 0px', threshold:0 });
+['top','deep','skills','socials','experience'].forEach(id=>{
+  const el = document.getElementById(id);
+  if(el) navObserver.observe(el);
+});
+</script>
+</body>
+</html>

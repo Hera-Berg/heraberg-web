@@ -1,0 +1,33 @@
+# ───────────────────────────────────────────────────────────────
+# cloudflared tunnel config  →  ~/.cloudflared/config.yml
+#
+# ONE tunnel publishes everything. Every public hostname points at
+# the SAME local glue server (port 8080). The glue server decides,
+# by Host header, which project to proxy to and whether to gate it.
+#
+# This means: adding a new project later does NOT require editing
+# this file IF you reuse the pattern of one wildcard. But Cloudflare
+# wildcard tunnels need a wildcard DNS + cert, so the explicit list
+# below is the simplest reliable approach. Add a line per project.
+# ───────────────────────────────────────────────────────────────
+
+tunnel: heraberg            # name of the tunnel you create (see SETUP.md)
+credentials-file: /home/youruser/.cloudflared/<TUNNEL-UUID>.json
+
+ingress:
+  # poster page — apex + www
+  - hostname: heraberg.com
+    service: http://127.0.0.1:8080
+  - hostname: www.heraberg.com
+    service: http://127.0.0.1:8080
+
+  # projects — all to the same glue port; the server routes by subdomain
+  - hostname: model.heraberg.com
+    service: http://127.0.0.1:8080
+  - hostname: medical.heraberg.com
+    service: http://127.0.0.1:8080
+  - hostname: harness.heraberg.com
+    service: http://127.0.0.1:8080
+
+  # required catch-all
+  - service: http_status:404

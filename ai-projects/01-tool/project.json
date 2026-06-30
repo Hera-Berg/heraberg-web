@@ -1,0 +1,10 @@
+{
+  "id": "lab-tool-example",
+  "tag": "tool",
+  "name": "Name it",
+  "blurb": "One line on what it is and why it's cool.",
+  "subdomain": "lab1",
+  "port": 9000,
+  "github": "https://github.com/herabergen/lab-tool-example",
+  "status": "live"
+}
