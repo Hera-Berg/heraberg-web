@@ -6,7 +6,7 @@
   "what": "Paste your own RunPod API key, point it at any Hugging Face model link, edit the system prompt, and chat with the model to evaluate output quality. Runs on your key, so it costs you nothing to host and nothing for me to run.",
   "tech": ["Python", "Docker", "RunPod API", "Hugging Face", "Serverless GPU"],
   "subdomain": "harness",
-  "github": "https://github.com/herabergen/model-test-harness",
+  "github": "https://github.com/Hera-Berg/ai-model-playground",
   "port": 8003,
   "gated": false,
   "status": "live",

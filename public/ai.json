@@ -4,7 +4,7 @@
     "tag": "tool",
     "name": "Name it",
     "blurb": "One line on what it is and why it's cool.",
-    "demo": "http://lab1.localhost:5080",
+    "demo": "https://lab1.heraberg.com",
     "github": "https://github.com/herabergen/lab-tool-example",
     "status": "live"
   },
@@ -13,7 +13,7 @@
     "tag": "demo",
     "name": "Live demo",
     "blurb": "Something interactive a recruiter can click and play with.",
-    "demo": "http://lab2.localhost:5080",
+    "demo": "https://lab2.heraberg.com",
     "github": "https://github.com/herabergen/lab-demo-example",
     "status": "live"
   }

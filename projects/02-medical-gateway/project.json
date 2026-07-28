@@ -3,19 +3,12 @@
   "name": "Medical AI Gateway",
   "tagline": "RAG-backed medical document analysis with multi-pass reasoning",
   "why": "The culmination of my double degree, a production shaped pipeline uniting RAG, multi-model orchestration and medical analysis. Built to scale where demos don't: a stateless backend and sharded vector store that grow horizontally with more data and users.",
-  "what": "Analyzes uploaded medical documents against vetted sources via RAG, with adjustable reasoning depth and cross-model cost comparison. It's a transparent research and cost tool — not a diagnostic device, not medical advice, and not a replacement for a clinician.",
-  "tech": [
-    "Python",
-    "Docker",
-    "RAG",
-    "Vector DB",
-    "Multi-model routing",
-    "RunPod (serverless GPU)"
-  ],
+  "what": "Analyzes uploaded medical documents against vetted sources via RAG, with adjustable reasoning depth and cross-model cost comparison. It's a transparent research and cost tool. Not a diagnostic device, not medical advice, and not a replacement for a clinician.",
+  "tech": ["Python", "Docker", "RAG", "Vector DB", "Multi-model routing", "RunPod (serverless GPU)"],
   "subdomain": "medical",
-  "github": "https://github.com/herabergen/medical-ai-gateway",
+  "github": "https://github.com/Hera-Berg/medical-ai-gateway",
   "port": 8002,
   "gated": true,
   "status": "live",
-  "disclaimer": "<strong>Demo only — not a medical device.</strong> Do not rely on this for any real clinical decision. You don't need to upload real records: sample data is available. Currently the demo holds only <strong>diabetes</strong> data (it's hosted on a personal machine, so space is limited) — diabetes is the only condition tested so far, and it performs well. The full version is designed to cover many more conditions, and results should generalise similarly. Inference runs on rented GPUs and may be slow or temporarily unavailable."
+  "disclaimer": "<strong>Demo only — not a medical device.</strong> Do not rely on this for any real clinical decision. You don't need to upload real records: sample data is available. Currently the demo holds only <strong>diabetes</strong> data (it's hosted on a personal machine, so space is limited) — diabetes is the only condition tested so far, and it performs well. The full version is designed to cover many more conditions, and results should generalise similarly. <strong>Heads up:</strong> the first request may return a 502 or time out while a GPU is found and the model weights load (a cold start) — this is normal. Just retry, and subsequent requests should work normally."
 }
