@@ -12,7 +12,7 @@ After=network-online.target
 [Service]
 Type=simple
 User=youruser
-WorkingDirectory=/home/youruser/heraberg-kit
+WorkingDirectory=/home/youruser/Documents/heraberg-kit
 ExecStart=/usr/bin/node --env-file=.env build.mjs --watch
 Restart=on-failure
 RestartSec=3

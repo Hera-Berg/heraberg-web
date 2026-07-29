@@ -1,20 +1,20 @@
 [
   {
-    "id": "lab-tool-example",
-    "tag": "tool",
-    "name": "Name it",
-    "blurb": "One line on what it is and why it's cool.",
-    "demo": "https://lab1.heraberg.com",
-    "github": "https://github.com/herabergen/lab-tool-example",
+    "id": "block-craft",
+    "tag": "game",
+    "name": "Block Craft",
+    "blurb": "A browser Minecraft-style voxel game, built AI-assisted.",
+    "demo": "https://blockcraft.heraberg.com",
+    "github": "https://github.com/Hera-Berg/block-craft",
     "status": "live"
   },
   {
-    "id": "lab-demo-example",
-    "tag": "demo",
-    "name": "Live demo",
-    "blurb": "Something interactive a recruiter can click and play with.",
-    "demo": "https://lab2.heraberg.com",
-    "github": "https://github.com/herabergen/lab-demo-example",
+    "id": "cogworks",
+    "tag": "game",
+    "name": "Cogworks",
+    "blurb": "A browser Factorio-style voxel game, built AI-assisted.",
+    "demo": "https://cogworks.heraberg.com",
+    "github": "hhttps://github.com/Hera-Berg/cogworks",
     "status": "live"
   }
 ]

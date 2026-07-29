@@ -1,0 +1,10 @@
+{
+  "id": "cogworks",
+  "tag": "game",
+  "name": "Cogworks",
+  "blurb": "A browser Factorio-style voxel game, built AI-assisted.",
+  "subdomain": "cogworks",
+  "port": 9011,
+  "github": "hhttps://github.com/Hera-Berg/cogworks",
+  "status": "live"
+}

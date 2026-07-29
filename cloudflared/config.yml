@@ -12,7 +12,7 @@
 # ───────────────────────────────────────────────────────────────
 
 tunnel: heraberg            # name of the tunnel you create (see SETUP.md)
-credentials-file: /home/youruser/.cloudflared/<TUNNEL-UUID>.json
+credentials-file: /etc/cloudflared/7d99b849-aa0d-489b-9c12-2a4280a9923e.json
 
 ingress:
   # poster page — apex + www
@@ -28,6 +28,9 @@ ingress:
     service: http://127.0.0.1:8080
   - hostname: harness.heraberg.com
     service: http://127.0.0.1:8080
-
+  - hostname: blockcraft.heraberg.com
+    service: http://127.0.0.1:8080
+  - hostname: cogworks.heraberg.com
+    service: http://127.0.0.1:8080
   # required catch-all
   - service: http_status:404

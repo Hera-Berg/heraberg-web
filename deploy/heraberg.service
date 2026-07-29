@@ -12,7 +12,7 @@ Wants=network-online.target
 [Service]
 Type=simple
 User=youruser
-WorkingDirectory=/home/youruser/heraberg-kit
+WorkingDirectory=/home/youruser/Documents/heraberg-kit
 # --env-file loads .env (Node 20+). Build once on start, then serve.
 ExecStartPre=/usr/bin/node --env-file=.env build.mjs
 ExecStart=/usr/bin/node --env-file=.env server.mjs

@@ -1,0 +1,10 @@
+{
+  "id": "block-craft",
+  "tag": "game",
+  "name": "Block Craft",
+  "blurb": "A browser Minecraft-style voxel game, built AI-assisted.",
+  "subdomain": "blockcraft",
+  "port": 9010,
+  "github": "https://github.com/Hera-Berg/block-craft",
+  "status": "live"
+}
