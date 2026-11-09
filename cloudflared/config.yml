@@ -32,5 +32,10 @@ ingress:
     service: http://127.0.0.1:8080
   - hostname: cogworks.heraberg.com
     service: http://127.0.0.1:8080
+
+  # standalone service — straight to SearXNG, not via the glue server
+  - hostname: search.heraberg.com
+    service: http://127.0.0.1:8004
+
   # required catch-all
   - service: http_status:404

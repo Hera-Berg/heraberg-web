@@ -14,7 +14,25 @@
     "name": "Cogworks",
     "blurb": "A browser Factorio-style voxel game, built AI-assisted.",
     "demo": "https://cogworks.heraberg.com",
-    "github": "hhttps://github.com/Hera-Berg/cogworks",
+    "github": "https://github.com/Hera-Berg/cogworks",
     "status": "live"
+  },
+  {
+    "id": "dotfiles",
+    "tag": "config",
+    "name": "My Dotfiles",
+    "blurb": "My whole Linux setup,shell, editor, tmux and tooling config, reproducible on a fresh machine in one command.",
+    "demo": "",
+    "github": "https://github.com/Hera-Berg/dotfiles",
+    "status": "wip"
+  },
+  {
+    "id": "linux-rice",
+    "tag": "rice",
+    "name": "My Linux Rice",
+    "blurb": "My Hyprland desktop, a Quickshell/QML bar, launcher, dashboard and lockscreen, forked from caelestia-shell and reworked to my own theming and workflow.",
+    "demo": "",
+    "github": "https://github.com/Hera-Berg/heraberg",
+    "status": "wip"
   }
 ]

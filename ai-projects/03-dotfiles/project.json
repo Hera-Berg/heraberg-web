@@ -1,0 +1,8 @@
+{
+  "id": "dotfiles",
+  "tag": "config",
+  "name": "My Dotfiles",
+  "blurb": "My whole Linux setup,shell, editor, tmux and tooling config, reproducible on a fresh machine in one command.",
+  "github": "https://github.com/Hera-Berg/dotfiles",
+  "status": "wip"
+}

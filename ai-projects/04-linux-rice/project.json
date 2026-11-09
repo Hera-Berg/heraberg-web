@@ -1,0 +1,8 @@
+{
+  "id": "linux-rice",
+  "tag": "rice",
+  "name": "My Linux Rice",
+  "blurb": "My Hyprland desktop, a Quickshell/QML bar, launcher, dashboard and lockscreen, forked from caelestia-shell and reworked to my own theming and workflow.",
+  "github": "https://github.com/Hera-Berg/heraberg",
+  "status": "wip"
+}
